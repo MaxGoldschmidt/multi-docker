@@ -6,7 +6,7 @@ before_install:
   - docker build -t maxgoldschmidt/react-test -f ./client/Dockerfile.dev ./client
 
 scripts:
-  - docker run maxgoldschmidt/react-test npm test -- --coverage
+  - docker run -e CI=true maxgoldschmidt/react-test npm test
 
 after_success:
   - docker build -t maxgoldschmidt/multi-client ./client
