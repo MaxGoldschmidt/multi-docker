@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t maxgoldschmidt/react-test -f ./client/Dockerfile.dev . /client
+
+scripts:
+  - docker run maxgoldschmidt/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t maxgoldschmidt/multi-client ./client
+  - docker build -t maxgoldschmidt/multi-nginx ./nginx
+  - docker build -t maxgoldschmidt/multi-server ./server
+  - docker build -t maxgoldschmidt/multi-worker ./worker
+  # log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # take those images and push them to docker hub
+  - docker push maxgoldschmidt/multi-client
+  - docker push maxgoldschmidt/multi-nginx
+  - docker push maxgoldschmidt/multi-server
+  - docker push maxgoldschmidt/multi-worker
